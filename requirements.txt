@@ -6,6 +6,8 @@ gtts
 
 BeautifulSoup4
 
+gdshortener
+
 cachetools==4.2.2
 
 certifi==2022.6.15
