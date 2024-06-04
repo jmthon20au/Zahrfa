@@ -1,70 +1,24 @@
-import telebot
-import subprocess
 import os
-from telebot import types
+from telegram.ext import Updater, CommandHandler
+from github import Github
 
-bot_token = '6577144269:AAFtpQNOaWlx4dedU1eZLbUmZsFiWCN5bBM'
-bot = telebot.TeleBot(bot_token)
+# استبدال 'TOKEN' بتوكن البوت الخاص بك
+updater = Updater("7292751852:AAGOLGQicGpA1LnWjtzm0wBqr7BtCKOFRGQ", use_context=True)
 
-uploaded_files_count = 0
-current_file_name = ""
-running_process = None
+# استبدال 'GITHUB_TOKEN' بتوكن وصول القارئ الذي يتم إنشاؤه من صفحة الإعدادات الشخصية على GitHub
+github_token = os.getenv('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')
+g = Github(github_token)
 
-@bot.message_handler(commands=['start'])
-def start_message(message):
-    global uploaded_files_count
-    keyboard = types.InlineKeyboardMarkup()
-    upload_button = types.InlineKeyboardButton(text="رفع ملف 📤", callback_data="upload")
-    delete = types.InlineKeyboardButton(text="حذف كل الملفات 🗑", callback_data="delete")
-    keyboard.row(upload_button,delete)
-    bot.reply_to(message, f'مرحباً بك في بوت ويفي 🌊 \n\n※ بوت رفع ملفات على استضافة بايثون 📤 \n※ تحكم في البوت من الازرار الموجودة بالاسفل \n\n※ عدد الملفات المرفوعه {uploaded_files_count} 📂', reply_markup=keyboard)
+# وظيفة للحصول على معلومات مستودع معين
+def get_repo_info(update, context):
+    repo_name = context.args[0]
+    repo = g.get_repo(repo_name)
+    repo_info = f"اسم المستودع: {repo.name}\nوصف المستودع: {repo.description}\nعدد النجوم: {repo.stargazers_count}"
+    update.message.reply_text(repo_info)
 
-@bot.message_handler(content_types=['document'])
-def handle_file(message):
-    global uploaded_files_count, current_file_name
-    file_info = bot.get_file(message.document.file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
-    
-    current_file_name = message.document.file_name
-    
-    with open(current_file_name, 'wb') as new_file:
-        new_file.write(downloaded_file)
-    
-    uploaded_files_count += 1
-    bot.reply_to(message, f'تم رفع الملف بنجاح ✅. \n\n※ توكن البوت: {bot_token}')
+# إضافة معالج للأمر /repo
+updater.dispatcher.add_handler(CommandHandler("repo", get_repo_info))
 
-    keyboard = types.InlineKeyboardMarkup()
-    run_button = types.InlineKeyboardButton(text="تشغيل الملف ▶️", callback_data="run")
-    delete_button = types.InlineKeyboardButton(text="ايقاف الملف ⏸", callback_data="stop")
-    keyboard.row(run_button, delete_button)
-    bot.send_message(message.chat.id, 'يمكنك الآن تشغيل الملف المرفوع أو حذفه:', reply_markup=keyboard)
-
-@bot.callback_query_handler(func=lambda call: True)
-def callback_query(call):
-    global current_file_name, running_process
-    try:
-        if call.data == 'upload':
-            bot.send_message(call.message.chat.id, 'أرسل الملف لرفعه على الاستضافة 📤.')
-        elif call.data == 'delete':
-            files = os.listdir('.')
-            for file in files:
-                if file.endswith('.py'):
-                    os.remove(file)
-            bot.send_message(call.message.chat.id, 'تم حذف جميع الملفات بنجاح 🗑.')
-        elif call.data == 'run':
-            if running_process is not None:
-                bot.send_message(call.message.chat.id, 'الملف شغال بالفعل ⚠️.')
-            else:
-                running_process = subprocess.Popen(['python3', current_file_name])
-                bot.send_message(call.message.chat.id, 'تمام شغلت الملف على السيرفر تقدر تستخدمه دلوقت ✅.')
-        elif call.data == 'stop':
-            if running_process is not None:
-                running_process.terminate()
-                running_process = None
-                bot.send_message(call.message.chat.id, 'تمام وقفت تشغيل الملف من على السيرفر ✅.')
-            else:
-                bot.send_message(call.message.chat.id, 'مفيش ملفات شغاله اصلا ❌.')
-    except Exception as e:
-        bot.send_message(call.message.chat.id, f'❌ حدث خطأ أثناء المعالجة : {e}')
-
-bot.polling()
+# تشغيل البوت
+updater.start_polling()
+updater.idle()
