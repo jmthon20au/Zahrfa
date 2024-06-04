@@ -1,4 +1,3 @@
-#pylint:disable=E0602
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import gdshortener
@@ -81,8 +80,6 @@ def Welcome(message):
  keyboard = telebot.types.InlineKeyboardMarkup(row_width=2)
  keyboard.add(
         telebot.types.InlineKeyboardButton(text='is.gd', callback_data='1'),
-        telebot.types.InlineKeyboardButton(text='za.gl', callback_data='2'),
-        telebot.types.InlineKeyboardButton(text='v.ht', callback_data='3')
     )
     
  bot.reply_to(message,'''مرحبا {}
