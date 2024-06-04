@@ -1,3 +1,4 @@
+pip install python-telegram-bot PyGithub
 import os
 from telegram.ext import Updater, CommandHandler
 from github import Github
