@@ -4,6 +4,8 @@ bs4
 
 gtts
 
+hijri_converter
+
 BeautifulSoup4
 
 gdshortener
