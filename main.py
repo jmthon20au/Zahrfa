@@ -93,13 +93,6 @@ def all(call):
  if call.data == '1':
   bot.send_message(call.message.chat.id,'ارسل الرابط لأقوم بأختصار بدومين is.gd')
   bot.register_next_step_handler(call.message, one)
- elif call.data == '2':
-  bot.send_message(call.message.chat.id,'ارسل الرابط لأقوم بأختصار بدومين za.gl')
-  bot.register_next_step_handler(call.message, two)
- elif call.data == '3':
-  bot.send_message(call.message.chat.id,'ارسل الرابط لأقوم بأختصار بدويمن v.ht')
-  bot.register_next_step_handler(call.message, three)
-  
 def one(message):
  if re.search("(?P<url>https?://[^\s]+)", message.text):
  	s = gdshortener.ISGDShortener()
@@ -216,12 +209,7 @@ headers = {
 def start(message):
     keyboard = types.InlineKeyboardMarkup()
     isrs = types.InlineKeyboardButton(text=" ~ ايديي", callback_data="get_id")
-    dragon = types.InlineKeyboardButton(text=" ~ المطور", url="https://t.me/altaee_z")
-    dragom = types.InlineKeyboardButton(text=" ~ قناة التحديثات", url="https://t.me/my00002")
     keyboard.add(isrs)
-    keyboard.add(dragon)
-    keyboard.add(dragom)
-    
     bot.send_message(message.chat.id, text="مرحبا بك \n الان فقط قم بارسال ايدي الحساب لمعرفه تاريخ الانشاء ✅", reply_markup=keyboard)
 
 @bot.message_handler(func=lambda message: True)
