@@ -2,7 +2,7 @@ APScheduler==3.6.3
 
 bs4
 
-github
+pip install python-telegram-bot PyGithub
 
 gtts
 
